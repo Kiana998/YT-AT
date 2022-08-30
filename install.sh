@@ -4,13 +4,13 @@ export Likk="$GITHUB_WORKSPACE"
 apktool(){ java -jar $Likk/Tools/kikfox.jar "$@"; }
 Taive () { curl -s -L --connect-timeout 20 "$1" -o "$2"; }
 Xem () { curl -s -G -L --connect-timeout 20 "$1"; }
-apksign () { java -jar $Likk/Tools/apksigner.jar sign --cert "$Likk/Tools/releasekey.x509.pem" --key "$Likk/Tools/releasekey.pk8" --out "$2" "$1"; }
+apksign () { java -jar $Likk/Tools/apksigner.jar sign --cert "$Likk/Tools/testkey.x509.pem" --key "$Likk/Tools/testkey.pk8" --out "$2" "$1"; }
 XHex(){ xxd -p "$@" | tr -d "\n" | tr -d ' '; }
 ZHex(){ xxd -r -p "$@"; }
 apktoolur(){
 apktool d -rs -m -f "$1" -o "$Likk/Nn"
 rm -fr "$Likk/Nn"/assets/fonts/*
-apktool b -c "$Likk/Nn" -f -o "$Likk/Nn.apk" | tee 1.txt
+apktool b -c "$Likk/Nn" -f -o "$Likk/Nn.apk"
 cp -rf "$Likk/Nn.apk" "$1"
 }
 cpnn(){
@@ -29,6 +29,7 @@ unzip -qo $Likk/lib/YouTube.apks 'base.apk' -d $Likk/Tav
 while true; do
 [ -e "$Likk/done.txt" ] && break || sleep 1
 done
+sleep 2
 }
 
 ListTM="lib
@@ -91,10 +92,9 @@ unzip -qo "$Likk/lib/YouTube.apk" "lib/$DEVICE/*" -d $Likk/Tav
 [ "$ICONS" == 'true' ] && echo -n "-e custom-branding " >> $Likk/logk
 [ "$SHORTS" == 'true' ] && echo -n "-e hide-shorts-button " >> $Likk/logk
 [ "$CREATE" == 'true' ] && echo -n "-e disable-create-button " >> $Likk/logk
-[ "$OPTIMIZATION" == 'true' ] && xoa2='assets/fonts/*'
-[ "$TYPE" != 'true' ] && lib2='lib/*' || lib2="$lib"
+[ "$TYPE" != 'true' ] && lib='lib/*/*'
 
-zip -qr -9 "$Likk/lib/YouTube.apk" -d $lib2 $xoa2 
+zip -qr "$Likk/lib/YouTube.apk" -d $lib
 
 if [ "$AMOLED" == 'true' ];then
 echo -n "-e amoled " >> $Likk/logk
@@ -125,6 +125,7 @@ fi
 # Xây dựng 
 if [ "$TYPE" != 'true' ];then
 ( java -jar $Likk/lib/revanced-cli.jar -m $Likk/lib/revanced-integrations.apk -b $Likk/lib/revanced-patches.jar -a "$Likk/lib/YouTube.apk" -o "$Likk/Tav/YouTube.apk" -t $Likk/tmp $(cat $Likk/logk) -e microg-support --mount
+[ "$OPTIMIZATION" == 'true' ] && apktoolur "$Likk/Tav/YouTube.apk"
 cd $Likk/Tav
 tar -cf - * | xz -9kz > $Likk/Module/common/lib.tar.xz
 cd $Likk/Module
@@ -136,10 +137,9 @@ echo '{
 "changelog": "https://raw.githubusercontent.com/'$GITHUB_REPOSITORY'/Vip/Zhaglog.md"
 }' > $Likk/Up-$ach$amoled2.json 
 echo > $Likk/done.txt ) & cpnn
-
 else
-
 ( java -jar $Likk/lib/revanced-cli.jar -m $Likk/lib/revanced-integrations.apk -b $Likk/lib/revanced-patches.jar -a "$Likk/lib/YouTube.apk" -o "$Likk/apk/YouTube.apk" -t $Likk/tmp $(cat $Likk/logk) --mount
+[ "$OPTIMIZATION" == 'true' ] && apktoolur "$Likk/apk/YouTube.apk"
 apksign "$Likk/apk/YouTube.apk" "$Likk/Up/YouTube-NoRoot-$Vision-$ach$amoled2.apk" 
 cp -rf "$Likk/Tools/Microg.apk" "$Likk/Up"
 echo > $Likk/done.txt ) & cpnn
