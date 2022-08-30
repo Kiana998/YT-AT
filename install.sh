@@ -1,21 +1,16 @@
 # Kakathic
 
 export Likk="$GITHUB_WORKSPACE"
-apktool(){ java -jar $Likk/Tools/apktool-2.6.2.jar "$@"; }
-Dx(){ java -jar $Likk/Tools/dx.jar --dex --no-strict --min-sdk-version 26 --core-library --output "$2" "$1"; }
-smali(){ java -jar $Likk/Tools/smali-2.5.2.jar "$@"; }
-baksmali(){ java -jar $Likk/Tools/baksmali-2.5.2.jar "$@"; }
+apktool(){ java -jar $Likk/Tools/kikfox.jar "$@"; }
 Taive () { curl -s -L --connect-timeout 20 "$1" -o "$2"; }
 Xem () { curl -s -G -L --connect-timeout 20 "$1"; }
-apksign () {
-java -jar $Likk/Tools/apksigner.jar sign --cert "$Likk/Tools/releasekey.x509.pem" --key "$Likk/Tools/releasekey.pk8" --out "$2" "$1"
-rm -fr "$2".idsig
-}
+apksign () { java -jar $Likk/Tools/apksigner.jar sign --cert "$Likk/Tools/releasekey.x509.pem" --key "$Likk/Tools/releasekey.pk8" --out "$2" "$1"; }
 XHex(){ xxd -p "$@" | tr -d "\n" | tr -d ' '; }
 ZHex(){ xxd -r -p "$@"; }
 
 apktoolur(){
 apktool d -rs -m -f "$1" -o "$Likk/Nn"
+rm -fr "$Likk/Nn"/assets/fonts/*
 apktool b -c "$Likk/Nn" -f -o "$Likk/Nn.apk" | tee 1.txt
 cp -rf "$Likk/Nn.apk" "$1"
 }
@@ -94,9 +89,7 @@ cp -rf $Likk/Tools/sqlite3_$ach $Likk/Module/common/sqlite3
 unzip -qo "$Likk/lib/YouTube.apk" "lib/$DEVICE/*" -d $Likk/Tav
 [ "$DEVICE" == 'x86' ] || mv -f $Likk/Tav/lib/$DEVICE $Likk/Tav/lib/$ach
 
-[ "$OPTIMIZATION" == 'true' ] && xoa2='stamp-cert-sha256 assets/fonts/*'
 [ "$ROUND" == 'true' ] || rm -fr $Likk/Module/system
-
 [ "$ICONS" == 'true' ] && echo -n "-e custom-branding " >> $Likk/logk
 [ "$SHORTS" == 'true' ] && echo -n "-e hide-shorts-button " >> $Likk/logk
 [ "$CREATE" == 'true' ] && echo -n "-e disable-create-button " >> $Likk/logk
@@ -130,7 +123,7 @@ fi
 # Xây dựng 
 if [ "$TYPE" != 'true' ];then
 ( java -jar $Likk/lib/revanced-cli.jar -m $Likk/lib/revanced-integrations.apk -b $Likk/lib/revanced-patches.jar -a "$Likk/lib/YouTube.apk" -o "$Likk/Tav/YouTube.apk" -t $Likk/tmp $(cat $Likk/logk) -e microg-support --mount
-zip -qr "$Likk/Tav/YouTube.apk" -d 'lib/*' $xoa2
+zip -qr "$Likk/Tav/YouTube.apk" -d 'lib/*'
 [ "$OPTIMIZATION" == 'true' ] && apktoolur "$Likk/Tav/YouTube.apk"
 cd $Likk/Tav
 tar -cf - * | xz -9kz > $Likk/Module/common/lib.tar.xz
@@ -147,8 +140,9 @@ echo > $Likk/done.txt ) & cpnn
 else
 
 ( java -jar $Likk/lib/revanced-cli.jar -m $Likk/lib/revanced-integrations.apk -b $Likk/lib/revanced-patches.jar -a "$Likk/lib/YouTube.apk" -o "$Likk/apk/YouTube.apk" -t $Likk/tmp $(cat $Likk/logk) --mount
-zip -qr -9 "$Likk/apk/YouTube.apk" -d $lib $xoa2
+zip -qr -9 "$Likk/apk/YouTube.apk" -d $lib
 [ "$OPTIMIZATION" == 'true' ] && apktoolur "$Likk/apk/YouTube.apk"
 apksign "$Likk/apk/YouTube.apk" "$Likk/Up/YouTube-NoRoot-$Vision-$ach$amoled2.apk" 
+cp -rf "$Likk/Tools/Microg.apk" "$Likk/Up"
 echo > $Likk/done.txt ) & cpnn
 fi
