@@ -1,4 +1,4 @@
-# YT-AT
+# YT-AT [![YT-AT](https://github.com/kakathic/YT-AT/actions/workflows/main.yml/badge.svg?event=workflow_dispatch)](https://github.com/kakathic/YT-AT/actions/workflows/main.yml)
 
 - YouTube mod tool automatically
 
@@ -48,8 +48,6 @@
 - I'm just the author of this github automation tool.
 
   > [Paypal](http://paypal.me/kakathic)
-
-- Techcombank: 19034902604017
 
 **Instructions**
 ---

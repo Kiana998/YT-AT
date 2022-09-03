@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       VERSION:
-        description: '17-32-35 => 17.33.42 is the YouTube version that revanced supports tool, you can import higher version but maybe broken some features.'
+        description: '17-32-35 > 17.32.35 is the YouTube version that revanced supports tool, you can import higher version but maybe broken some features.'
         required: true
         default: '17-33-42'
       DEVICE:
@@ -82,11 +82,12 @@ jobs:
         run: |
           SVision="17.33.42"
           chmod -R 777 Tools/*
-          chmod 777 install.sh
-          . install.sh
+          chmod 777 .github/install.sh
+          . .github/install.sh
       - name: Upload json
         uses: softprops/action-gh-release@v1
         with:
+          token: ${{ github.token }}
           name: Update
           tag_name: Up
           files: Up*.json
@@ -94,6 +95,14 @@ jobs:
       - name: Upload File
         uses: softprops/action-gh-release@v1
         with:
+          token: ${{ github.token }}
           name: YT-AT ${{ github.event.inputs.VERSION }}
           tag_name: V${{ github.event.inputs.VERSION }}
           files: Up/*
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 1
+          keep_minimum_runs: 0

@@ -1,5 +1,4 @@
-
-# YT-AT
+# YT-AT [![YT-AT](https://github.com/kakathic/YT-AT/actions/workflows/main.yml/badge.svg?event=workflow_dispatch)](https://github.com/kakathic/YT-AT/actions/workflows/main.yml)
 
 - Công cụ mod YouTube tự động
 
@@ -46,8 +45,6 @@
 - Bạn nên hỗ trợ nhóm phát triển Revanced vì đã tạo ra một công cụ tuyệt vời.
 
 - Tôi chỉ là tác giả của công cụ tự động hóa github này.
-
-  > [Paypal](http://paypal.me/kakathic)
 
 - Techcombank: 19034902604017
 
