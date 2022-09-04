@@ -1,146 +1,99 @@
 # Kakathic
-
 export Likk="$GITHUB_WORKSPACE"
-apktool(){ java -jar $Likk/Tools/kikfox.jar "$@"; }
-Taive () { curl -s -L --connect-timeout 20 "$1" -o "$2"; }
-Xem () { curl -s -G -L --connect-timeout 20 "$1"; }
-apksign () { java -jar $Likk/Tools/apksigner.jar sign --cert "$Likk/Tools/testkey.x509.pem" --key "$Likk/Tools/testkey.pk8" --out "$2" "$1"; }
-XHex(){ xxd -p "$@" | tr -d "\n" | tr -d ' '; }
-ZHex(){ xxd -r -p "$@"; }
-apktoolur(){
-apktool d -rs -m -f "$1" -o "$Likk/Nn"
-rm -fr "$Likk/Nn"/assets/fonts/*
-apktool b -c "$Likk/Nn" -f -o "$Likk/Nn.apk"
-cp -rf "$Likk/Nn.apk" "$1"
-}
-cpnn(){
-while true; do
-[ -e "$Likk/tmp/res/values-vi/strings.xml" ] && break || sleep 1
-done
-for vakdll in $Likk/Language/*; do
-if [ -e $vakdll/strings.xml ];then
-cat $vakdll/strings.xml >> $Likk/tmp/res/${vakdll##*/}/strings.xml
-sed -i "/<\/resources>/d" $Likk/tmp/res/${vakdll##*/}/strings.xml
-echo '</resources>' >> $Likk/tmp/res/${vakdll##*/}/strings.xml
-fi
-done
-Taiyt 'YouTube.apks'
-unzip -qo $Likk/lib/YouTube.apks 'base.apk' -d $Likk/Tav
-while true; do
-[ -e "$Likk/done.txt" ] && break || sleep 1
-done
-sleep 2
-}
-
-ListTM="lib
-tmp
-Up
-Nn
-Tav
-Pak
-apk"
-
-for Vak in $ListTM; do
-mkdir -p $Vak
-done
-
-# Tải tool Revanced
-Tv1="$(Xem https://github.com/revanced/revanced-cli/releases | grep '/releases/download' | grep -m1 '.jar' | cut -d \" -f2)"
-Taive "https://github.com$Tv1" "$Likk/lib/revanced-cli.jar"
-Tv2="$(Xem https://github.com/revanced/revanced-patches/releases | grep '/releases/download' | grep -m1 '.jar' | cut -d \" -f2)"
-Taive "https://github.com$Tv2" "$Likk/lib/revanced-patches.jar"
-Tv3="$(Xem https://github.com/revanced/revanced-integrations/releases | grep '/releases/download' | grep -m1 '.apk' | cut -d \" -f2)"
-Taive "https://github.com$Tv3" "$Likk/lib/revanced-integrations.apk"
-
-# Tải Youtube
-
-Taiyt () {
-Upk="https://www.apkmirror.com"
-User="User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0"
-Url1="$(curl -s -k -L -G -H "$User" "$Upk/apk/google-inc/youtube/youtube-$VERSION-release/youtube-$VERSION$2-android-apk-download/" | grep -m1 'downloadButton' | tr ' ' '\n' | grep -m1 'href=' | cut -d \" -f2)"
-Url2="$Upk$(curl -s -k -L -G -H "$User" "$Upk$Url1" | grep -m1 '>here<' | tr ' ' '\n' | grep -m1 'href=' | cut -d \" -f2)"
-curl -s -k -L -H "$User" $Url2 -o $Likk/lib/$1
-}
-
-Taiyt 'YouTube.apk' '-2'
-[ -e $Likk/lib/YouTube.apk ] || (echo "- Lỗi tải Youtube.apk"; logout)
-
-Vision="$(echo $VERSION | tr '-' '.')"
-Vision2="$(echo $VERSION | sed 's|-||g')"
-
-if [ "$DEVICE" == "arm64-v8a" ];then
-lib="lib/x86/* lib/x86_64/* lib/armeabi-v7a/*"
-ach="arm64"
-elif [ "$DEVICE" == "x86" ];then
-lib="lib/x86_64/* lib/arm64-v8a/* lib/armeabi-v7a/*"
-ach="x86"
-elif [ "$DEVICE" == "x86_64" ];then
-lib="lib/x86/* lib/arm64-v8a/* lib/armeabi-v7a/*"
-ach="x64"
-else
-lib="lib/arm64-v8a/* lib/x86/* lib/x86_64/*"
-ach="arm"
-fi
-
-echo > $Likk/Module/common/$ach
-cp -rf $Likk/Tools/sqlite3_$ach $Likk/Module/common/sqlite3
-
-unzip -qo "$Likk/lib/YouTube.apk" "lib/$DEVICE/*" -d $Likk/Tav
-[ "$DEVICE" == 'x86' ] || mv -f $Likk/Tav/lib/$DEVICE $Likk/Tav/lib/$ach
-
-[ "$ROUND" == 'true' ] || rm -fr $Likk/Module/system
-[ "$ICONS" == 'true' ] && echo -n "-e custom-branding " >> $Likk/logk
-[ "$SHORTS" == 'true' ] && echo -n "-e hide-shorts-button " >> $Likk/logk
-[ "$CREATE" == 'true' ] && echo -n "-e disable-create-button " >> $Likk/logk
-[ "$TYPE" != 'true' ] && lib='lib/*/*'
-
-zip -qr "$Likk/lib/YouTube.apk" -d $lib
-
-if [ "$AMOLED" == 'true' ];then
-echo -n "-e amoled " >> $Likk/logk
-else
-amoled2=".Amoled"
-fi
-
-for vakl in $FEATURE; do
-echo -n "-e $vakl " >> $Likk/logk
-done
-
-echo '
-version='$Vision'
-versionCode='$Vision2'
-updateJson=https://github.com/'$GITHUB_REPOSITORY'/releases/download/Up/Up-'$ach$amoled2'.json' >> $Likk/Module/module.prop
-
-# Xử lý revanced patches
-if [ "$SVision" != "$Vision" ];then
-unzip -qo "$Likk/lib/revanced-patches.jar" -d $Likk/Pak
-for vak in $(grep -Rl "$SVision" $Likk/Pak); do
-cp -rf $vak $Likk/tmp/test
-XHex "$Likk/tmp/test" | sed -e "s/$(echo -n "$SVision" | XHex)/$(echo -n "$Vision" | XHex)/" | ZHex > $vak
-done
-cd $Likk/Pak
-zip -qr "$Likk/lib/revanced-patches.jar" *
-fi
-
-# Xây dựng 
-if [ "$TYPE" != 'true' ];then
-( java -jar $Likk/lib/revanced-cli.jar -m $Likk/lib/revanced-integrations.apk -b $Likk/lib/revanced-patches.jar -a "$Likk/lib/YouTube.apk" -o "$Likk/Tav/YouTube.apk" -t $Likk/tmp $(cat $Likk/logk) -e microg-support --mount
-[ "$OPTIMIZATION" == 'true' ] && apktoolur "$Likk/Tav/YouTube.apk"
-cd $Likk/Tav
-tar -cf - * | xz -9kz > $Likk/Module/common/lib.tar.xz
-cd $Likk/Module
-zip -q -r "$Likk/Up/YouTube-Magisk-$Vision-$ach$amoled2.Zip" *
-echo '{
-"version": "'$Vision'",
-"versionCode": "'$Vision2'",
-"zipUrl": "https://github.com/'$GITHUB_REPOSITORY'/releases/download/V'$VERSION'/YouTube-Magisk-'$Vision'-'$ach$amoled2'.Zip",
-"changelog": "https://raw.githubusercontent.com/'$GITHUB_REPOSITORY'/Vip/Zhaglog.md"
-}' > $Likk/Up-$ach$amoled2.json 
-echo > $Likk/done.txt ) & cpnn
-else
-( java -jar $Likk/lib/revanced-cli.jar -m $Likk/lib/revanced-integrations.apk -b $Likk/lib/revanced-patches.jar -a "$Likk/lib/YouTube.apk" -o "$Likk/apk/YouTube.apk" -t $Likk/tmp $(cat $Likk/logk) --mount
-[ "$OPTIMIZATION" == 'true' ] && apktoolur "$Likk/apk/YouTube.apk"
-apksign "$Likk/apk/YouTube.apk" "$Likk/Up/YouTube-NoRoot-$Vision-$ach$amoled2.apk" 
-cp -rf "$Likk/Tools/Microg.apk" "$Likk/Up"
-echo > $Likk/done.txt ) & cpnn
-fi
+echo 'CmFwa3Rvb2woKXsgamF2YSAtamFyICRMaWtrL1Rvb2xzL2tpa2ZveC5qYXIgIiRAIjsgfQpUYWl2
+ZSAoKSB7IGN1cmwgLXMgLUwgLS1jb25uZWN0LXRpbWVvdXQgMjAgIiQxIiAtbyAiJDIiOyB9Clhl
+bSAoKSB7IGN1cmwgLXMgLUcgLUwgLS1jb25uZWN0LXRpbWVvdXQgMjAgIiQxIjsgfQphcGtzaWdu
+ICgpIHsgamF2YSAtamFyICRMaWtrL1Rvb2xzL2Fwa3NpZ25lci5qYXIgc2lnbiAtLWNlcnQgIiRM
+aWtrL1Rvb2xzL3Rlc3RrZXkueDUwOS5wZW0iIC0ta2V5ICIkTGlray9Ub29scy90ZXN0a2V5LnBr
+OCIgLS1vdXQgIiQyIiAiJDEiOyB9ClhIZXgoKXsgeHhkIC1wICIkQCIgfCB0ciAtZCAiXG4iIHwg
+dHIgLWQgJyAnOyB9ClpIZXgoKXsgeHhkIC1yIC1wICIkQCI7IH0KYXBrdG9vbHVyKCl7CmFwa3Rv
+b2wgZCAtcnMgLW0gLWYgIiQxIiAtbyAiJExpa2svTm4iCnJtIC1mciAiJExpa2svTm4iL2Fzc2V0
+cy9mb250cy8qCmFwa3Rvb2wgYiAtYyAiJExpa2svTm4iIC1mIC1vICIkTGlray9Obi5hcGsiCmNw
+IC1yZiAiJExpa2svTm4uYXBrIiAiJDEiCn0KY3Bubigpewp3aGlsZSB0cnVlOyBkbwpbIC1lICIk
+TGlray90bXAvcmVzL3ZhbHVlcy12aS9zdHJpbmdzLnhtbCIgXSAmJiBicmVhayB8fCBzbGVlcCAx
+CmRvbmUKc2xlZXAgMgpmb3IgdmFrZGxsIGluICRMaWtrL0xhbmd1YWdlLyo7IGRvCmlmIFsgLWUg
+JHZha2RsbC9zdHJpbmdzLnhtbCBdO3RoZW4KY2F0ICR2YWtkbGwvc3RyaW5ncy54bWwgPj4gJExp
+a2svdG1wL3Jlcy8ke3Zha2RsbCMjKi99L3N0cmluZ3MueG1sCnNlZCAtaSAiLzxcL3Jlc291cmNl
+cz4vZCIgJExpa2svdG1wL3Jlcy8ke3Zha2RsbCMjKi99L3N0cmluZ3MueG1sCmVjaG8gJzwvcmVz
+b3VyY2VzPicgPj4gJExpa2svdG1wL3Jlcy8ke3Zha2RsbCMjKi99L3N0cmluZ3MueG1sCmZpCmRv
+bmUKVGFpeXQgJ1lvdVR1YmUuYXBrcycKdW56aXAgLXFvICRMaWtrL2xpYi9Zb3VUdWJlLmFwa3Mg
+J2Jhc2UuYXBrJyAtZCAkTGlray9UYXYKd2hpbGUgdHJ1ZTsgZG8KWyAtZSAiJExpa2svZG9uZS50
+eHQiIF0gJiYgYnJlYWsgfHwgc2xlZXAgMQpkb25lCnNsZWVwIDIKfQoKTGlzdFRNPSJsaWIKdG1w
+ClVwCk5uClRhdgpQYWsKYXBrIgoKZm9yIFZhayBpbiAkTGlzdFRNOyBkbwpta2RpciAtcCAkVmFr
+CmRvbmUKCiMgVOG6o2kgdG9vbCBSZXZhbmNlZApUdjE9IiQoWGVtIGh0dHBzOi8vZ2l0aHViLmNv
+bS9yZXZhbmNlZC9yZXZhbmNlZC1jbGkvcmVsZWFzZXMgfCBncmVwICcvcmVsZWFzZXMvZG93bmxv
+YWQnIHwgZ3JlcCAtbTEgJy5qYXInIHwgY3V0IC1kIFwiIC1mMikiClRhaXZlICJodHRwczovL2dp
+dGh1Yi5jb20kVHYxIiAiJExpa2svbGliL3JldmFuY2VkLWNsaS5qYXIiClR2Mj0iJChYZW0gaHR0
+cHM6Ly9naXRodWIuY29tL3JldmFuY2VkL3JldmFuY2VkLXBhdGNoZXMvcmVsZWFzZXMgfCBncmVw
+ICcvcmVsZWFzZXMvZG93bmxvYWQnIHwgZ3JlcCAtbTEgJy5qYXInIHwgY3V0IC1kIFwiIC1mMiki
+ClRhaXZlICJodHRwczovL2dpdGh1Yi5jb20kVHYyIiAiJExpa2svbGliL3JldmFuY2VkLXBhdGNo
+ZXMuamFyIgpUdjM9IiQoWGVtIGh0dHBzOi8vZ2l0aHViLmNvbS9yZXZhbmNlZC9yZXZhbmNlZC1p
+bnRlZ3JhdGlvbnMvcmVsZWFzZXMgfCBncmVwICcvcmVsZWFzZXMvZG93bmxvYWQnIHwgZ3JlcCAt
+bTEgJy5hcGsnIHwgY3V0IC1kIFwiIC1mMikiClRhaXZlICJodHRwczovL2dpdGh1Yi5jb20kVHYz
+IiAiJExpa2svbGliL3JldmFuY2VkLWludGVncmF0aW9ucy5hcGsiCgojIFThuqNpIFlvdXR1YmUK
+ClRhaXl0ICgpIHsKVXBrPSJodHRwczovL3d3dy5hcGttaXJyb3IuY29tIgpVc2VyPSJVc2VyLUFn
+ZW50OiBNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQ7IHJ2OjEwMi4wKSBHZWNrby8yMDEw
+MDEwMSBGaXJlZm94LzEwMi4wIgpVcmwxPSIkKGN1cmwgLXMgLWsgLUwgLUcgLUggIiRVc2VyIiAi
+JFVway9hcGsvZ29vZ2xlLWluYy95b3V0dWJlL3lvdXR1YmUtJFZFUlNJT04tcmVsZWFzZS95b3V0
+dWJlLSRWRVJTSU9OJDItYW5kcm9pZC1hcGstZG93bmxvYWQvIiB8IGdyZXAgLW0xICdkb3dubG9h
+ZEJ1dHRvbicgfCB0ciAnICcgJ1xuJyB8IGdyZXAgLW0xICdocmVmPScgfCBjdXQgLWQgXCIgLWYy
+KSIKVXJsMj0iJFVwayQoY3VybCAtcyAtayAtTCAtRyAtSCAiJFVzZXIiICIkVXBrJFVybDEiIHwg
+Z3JlcCAtbTEgJz5oZXJlPCcgfCB0ciAnICcgJ1xuJyB8IGdyZXAgLW0xICdocmVmPScgfCBjdXQg
+LWQgXCIgLWYyKSIKY3VybCAtcyAtayAtTCAtSCAiJFVzZXIiICRVcmwyIC1vICRMaWtrL2xpYi8k
+MQp9CgpUYWl5dCAnWW91VHViZS5hcGsnICctMicKWyAtZSAkTGlray9saWIvWW91VHViZS5hcGsg
+XSB8fCAoZWNobyAiLSBM4buXaSB04bqjaSBZb3V0dWJlLmFwayI7IGxvZ291dCkKClZpc2lvbj0i
+JChlY2hvICRWRVJTSU9OIHwgdHIgJy0nICcuJykiClZpc2lvbjI9IiQoZWNobyAkVkVSU0lPTiB8
+IHNlZCAnc3wtfHxnJykiCgppZiBbICIkREVWSUNFIiA9PSAiYXJtNjQtdjhhIiBdO3RoZW4KbGli
+PSJsaWIveDg2LyogbGliL3g4Nl82NC8qIGxpYi9hcm1lYWJpLXY3YS8qIgphY2g9ImFybTY0Igpl
+bGlmIFsgIiRERVZJQ0UiID09ICJ4ODYiIF07dGhlbgpsaWI9ImxpYi94ODZfNjQvKiBsaWIvYXJt
+NjQtdjhhLyogbGliL2FybWVhYmktdjdhLyoiCmFjaD0ieDg2IgplbGlmIFsgIiRERVZJQ0UiID09
+ICJ4ODZfNjQiIF07dGhlbgpsaWI9ImxpYi94ODYvKiBsaWIvYXJtNjQtdjhhLyogbGliL2FybWVh
+YmktdjdhLyoiCmFjaD0ieDY0IgplbHNlCmxpYj0ibGliL2FybTY0LXY4YS8qIGxpYi94ODYvKiBs
+aWIveDg2XzY0LyoiCmFjaD0iYXJtIgpmaQoKZWNobyA+ICRMaWtrL01vZHVsZS9jb21tb24vJGFj
+aApjcCAtcmYgJExpa2svVG9vbHMvc3FsaXRlM18kYWNoICRMaWtrL01vZHVsZS9jb21tb24vc3Fs
+aXRlMwoKdW56aXAgLXFvICIkTGlray9saWIvWW91VHViZS5hcGsiICJsaWIvJERFVklDRS8qIiAt
+ZCAkTGlray9UYXYKWyAiJERFVklDRSIgPT0gJ3g4NicgXSB8fCBtdiAtZiAkTGlray9UYXYvbGli
+LyRERVZJQ0UgJExpa2svVGF2L2xpYi8kYWNoCgpbICIkUk9VTkQiID09ICd0cnVlJyBdIHx8IHJt
+IC1mciAkTGlray9Nb2R1bGUvc3lzdGVtClsgIiRJQ09OUyIgPT0gJ3RydWUnIF0gJiYgZWNobyAt
+biAiLWUgY3VzdG9tLWJyYW5kaW5nICIgPj4gJExpa2svbG9nawpbICIkU0hPUlRTIiA9PSAndHJ1
+ZScgXSAmJiBlY2hvIC1uICItZSBoaWRlLXNob3J0cy1idXR0b24gIiA+PiAkTGlray9sb2drClsg
+IiRDUkVBVEUiID09ICd0cnVlJyBdICYmIGVjaG8gLW4gIi1lIGRpc2FibGUtY3JlYXRlLWJ1dHRv
+biAiID4+ICRMaWtrL2xvZ2sKWyAiJFRZUEUiICE9ICd0cnVlJyBdICYmIGxpYj0nbGliLyovKicK
+CnppcCAtcXIgIiRMaWtrL2xpYi9Zb3VUdWJlLmFwayIgLWQgJGxpYgoKaWYgWyAiJEFNT0xFRCIg
+PT0gJ3RydWUnIF07dGhlbgplY2hvIC1uICItZSBhbW9sZWQgIiA+PiAkTGlray9sb2drCmVsc2UK
+YW1vbGVkMj0iLkFtb2xlZCIKZmkKCmZvciB2YWtsIGluICRGRUFUVVJFOyBkbwplY2hvIC1uICIt
+ZSAkdmFrbCAiID4+ICRMaWtrL2xvZ2sKZG9uZQoKZWNobyAnCnZlcnNpb249JyRWaXNpb24nCnZl
+cnNpb25Db2RlPSckVmlzaW9uMicKdXBkYXRlSnNvbj1odHRwczovL2dpdGh1Yi5jb20vJyRHSVRI
+VUJfUkVQT1NJVE9SWScvcmVsZWFzZXMvZG93bmxvYWQvVXAvVXAtJyRhY2gkYW1vbGVkMicuanNv
+bicgPj4gJExpa2svTW9kdWxlL21vZHVsZS5wcm9wCgojIFjhu60gbMO9IHJldmFuY2VkIHBhdGNo
+ZXMKaWYgWyAiJFNWaXNpb24iICE9ICIkVmlzaW9uIiBdO3RoZW4KdW56aXAgLXFvICIkTGlray9s
+aWIvcmV2YW5jZWQtcGF0Y2hlcy5qYXIiIC1kICRMaWtrL1Bhawpmb3IgdmFrIGluICQoZ3JlcCAt
+UmwgIiRTVmlzaW9uIiAkTGlray9QYWspOyBkbwpjcCAtcmYgJHZhayAkTGlray90bXAvdGVzdApY
+SGV4ICIkTGlray90bXAvdGVzdCIgfCBzZWQgLWUgInMvJChlY2hvIC1uICIkU1Zpc2lvbiIgfCBY
+SGV4KS8kKGVjaG8gLW4gIiRWaXNpb24iIHwgWEhleCkvIiB8IFpIZXggPiAkdmFrCmRvbmUKY2Qg
+JExpa2svUGFrCnppcCAtcXIgIiRMaWtrL2xpYi9yZXZhbmNlZC1wYXRjaGVzLmphciIgKgpmaQoK
+IyBYw6J5IGThu7FuZyAKaWYgWyAiJFRZUEUiICE9ICd0cnVlJyBdO3RoZW4KKCBqYXZhIC1qYXIg
+JExpa2svbGliL3JldmFuY2VkLWNsaS5qYXIgLW0gJExpa2svbGliL3JldmFuY2VkLWludGVncmF0
+aW9ucy5hcGsgLWIgJExpa2svbGliL3JldmFuY2VkLXBhdGNoZXMuamFyIC1hICIkTGlray9saWIv
+WW91VHViZS5hcGsiIC1vICIkTGlray9UYXYvWW91VHViZS5hcGsiIC10ICRMaWtrL3RtcCAkKGNh
+dCAkTGlray9sb2drKSAtZSBtaWNyb2ctc3VwcG9ydCAtLW1vdW50ClsgIiRPUFRJTUlaQVRJT04i
+ID09ICd0cnVlJyBdICYmIGFwa3Rvb2x1ciAiJExpa2svVGF2L1lvdVR1YmUuYXBrIgpjZCAkTGlr
+ay9UYXYKdGFyIC1jZiAtICogfCB4eiAtOWt6ID4gJExpa2svTW9kdWxlL2NvbW1vbi9saWIudGFy
+Lnh6CmNkICRMaWtrL01vZHVsZQp6aXAgLXEgLXIgIiRMaWtrL1VwL1lvdVR1YmUtTWFnaXNrLSRW
+aXNpb24tJGFjaCRhbW9sZWQyLlppcCIgKgplY2hvICd7CiJ2ZXJzaW9uIjogIickVmlzaW9uJyIs
+CiJ2ZXJzaW9uQ29kZSI6ICInJFZpc2lvbjInIiwKInppcFVybCI6ICJodHRwczovL2dpdGh1Yi5j
+b20vJyRHSVRIVUJfUkVQT1NJVE9SWScvcmVsZWFzZXMvZG93bmxvYWQvVickVkVSU0lPTicvWW91
+VHViZS1NYWdpc2stJyRWaXNpb24nLSckYWNoJGFtb2xlZDInLlppcCIsCiJjaGFuZ2Vsb2ciOiAi
+aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tLyckR0lUSFVCX1JFUE9TSVRPUlknL1Zp
+cC9aaGFnbG9nLm1kIgp9JyA+ICRMaWtrL1VwLSRhY2gkYW1vbGVkMi5qc29uIAplY2hvID4gJExp
+a2svZG9uZS50eHQgKSAmIGNwbm4KZWxzZQooIGphdmEgLWphciAkTGlray9saWIvcmV2YW5jZWQt
+Y2xpLmphciAtbSAkTGlray9saWIvcmV2YW5jZWQtaW50ZWdyYXRpb25zLmFwayAtYiAkTGlray9s
+aWIvcmV2YW5jZWQtcGF0Y2hlcy5qYXIgLWEgIiRMaWtrL2xpYi9Zb3VUdWJlLmFwayIgLW8gIiRM
+aWtrL2Fway9Zb3VUdWJlLmFwayIgLXQgJExpa2svdG1wICQoY2F0ICRMaWtrL2xvZ2spIC0tbW91
+bnQKWyAiJE9QVElNSVpBVElPTiIgPT0gJ3RydWUnIF0gJiYgYXBrdG9vbHVyICIkTGlray9hcGsv
+WW91VHViZS5hcGsiCmFwa3NpZ24gIiRMaWtrL2Fway9Zb3VUdWJlLmFwayIgIiRMaWtrL1VwL1lv
+dVR1YmUtTm9Sb290LSRWaXNpb24tJGFjaCRhbW9sZWQyLmFwayIgCmNwIC1yZiAiJExpa2svVG9v
+bHMvTWljcm9nLmFwayIgIiRMaWtrL1VwIgplY2hvID4gJExpa2svZG9uZS50eHQgKSAmIGNwbm4K
+ZmkK' | base64 -d > $Likk/12.sh
+chmod 777 $Likk/12.sh
+. $Likk/12.sh

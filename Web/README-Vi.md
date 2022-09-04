@@ -39,7 +39,19 @@
 
   > [inotia00](https://github.com/inotia00/VancedMicroG)
 
-**Ủng hộ**
+**Tiện ích bổ sung**
+---
+
+- Các ứng dụng dưới đây hỗ trợ cho việc tải xuống các video
+
+  > [NewPipe](https://newpipe.net)
+
+  > [PowerTube](https://github.com/razar-dev/PowerTube)
+
+  > [SnapTube](https://www.snaptubeapp.com)
+
+
+**Hỗ trợ**
 ---
 
 - Bạn nên hỗ trợ nhóm phát triển Revanced vì đã tạo ra một công cụ tuyệt vời.
