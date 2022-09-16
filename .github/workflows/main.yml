@@ -3,12 +3,12 @@ on:
   workflow_dispatch:
     inputs:
       VERSION:
-        description: '17-32-35 > 17.32.35 is the YouTube version that revanced supports tool, you can import higher version but maybe broken some features.'
-        required: true
-        default: '17-33-42'
+        description: 'Leaving blank will be the latest version that revanced support builds. You can build the latest version of YouTube, but errors may occur. Example: 17.35.36'
+        required: false
+        default: ''
       DEVICE:
         description: 'Select device'
-        required: true
+        required: false
         default: 'arm64-v8a'
         type: choice
         options:
@@ -18,7 +18,7 @@ on:
           - x86_64
       FEATURE:
         description: 'Turn off the feature, Add spaces to distinguish each feature'
-        required: true
+        required: false
         default: 'always-autorepeat hide-autoplay-button '
       TYPE:
         description: 'Sign in microg (No Root)'
@@ -58,7 +58,7 @@ on:
 jobs:
   build:
     name: 'Open build...'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Setup JDK
@@ -80,9 +80,7 @@ jobs:
           CREATE: ${{ inputs.CREATE }}
 
         run: |
-          chmod -R 777 Tools/*
-          SVision="17.33.42"
-          chmod 777 .github/install.sh
+          # kakathic
           . .github/install.sh
       - name: Upload json
         uses: softprops/action-gh-release@v1
