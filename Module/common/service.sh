@@ -18,14 +18,16 @@ ${0%/*}/sqlite3 "$@"
 
 PK=com.google.android.youtube
 base_path="${0%/*}/YouTube.apk"
-stock_path=$( pm path $PK | grep base | sed 's/package://g' )
+stock_path=$(pm path $PK | cut -d : -f2)
 
 if [ "$stock_path" ];then
 chcon u:object_r:apk_data_file:s0 $base_path
 mount -o bind $base_path $stock_path
 else
+umount -l "$(find /data/app/*$PK* -name 'base.apk')"
+umount -l "$(find /data/app/*/*$PK* -name 'base.apk')"
 pm install -r ${0%/*}/base.apk
-apk_path=$( pm path $PK | grep base | sed 's/package://g' )
+apk_path=$(pm path $PK | cut -d : -f2)
 cp -rf ${0%/*}/lib ${apk_path%/*}
 chcon u:object_r:apk_data_file:s0 $base_path
 mount -o bind $base_path $apk_path
