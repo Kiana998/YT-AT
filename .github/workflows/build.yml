@@ -1,7 +1,7 @@
 name: YT-AT
 on:
   schedule:
-    - cron: '30 5 1 * *'
+    - cron: '30 23 * * *'
   workflow_dispatch:
     inputs:
       VERSION:
@@ -221,5 +221,5 @@ jobs:
         with:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
-          retain_days: 1
+          retain_days: 0
           keep_minimum_runs: 0
