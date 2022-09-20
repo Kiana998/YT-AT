@@ -2,10 +2,10 @@
 Likk="$GITHUB_WORKSPACE"
 sudo apt install zipalign >/dev/null
 User="User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0"
-apktool(){ java -jar $Likk/Tools/kikfox.jar "$@"; }
+apktool(){ java -jar $Likk/.github/Tools/kikfox.jar "$@"; }
 Taive () { curl -s -L -N -H "$User" --connect-timeout 20 "$1" -o "$2"; }
 Xem () { curl -s -G -L -N -H "$User" --connect-timeout 20 "$1"; }
-apksign () { java -jar $Likk/Tools/apksigner.jar sign --cert "$Likk/Tools/testkey.x509.pem" --key "$Likk/Tools/testkey.pk8" --out "$2" "$1"; }
+apksign () { java -jar $Likk/.github/Tools/apksigner.jar sign --cert "$Likk/.github/Tools/testkey.x509.pem" --key "$Likk/.github/Tools/testkey.pk8" --out "$2" "$1"; }
 XHex(){ xxd -p "$@" | tr -d "\n" | tr -d ' '; }
 ZHex(){ xxd -r -p "$@"; }
 apktoolur(){
@@ -19,7 +19,7 @@ while true; do
 [ -e "$Likk/tmp/res/values-vi/strings.xml" ] && break || sleep 1
 done
 sleep 2
-for vakdll in $Likk/Language/*; do
+for vakdll in $Likk/Lang/*; do
 if [ -e $vakdll/strings.xml ];then
 cat $vakdll/strings.xml >> $Likk/tmp/res/${vakdll##*/}/strings.xml
 sed -i "/<\/resources>/d" $Likk/tmp/res/${vakdll##*/}/strings.xml
@@ -95,7 +95,7 @@ ach="arm"
 fi
 
 echo > $Likk/Module/common/$ach
-cp -rf $Likk/Tools/sqlite3_$ach $Likk/Module/common/sqlite3
+cp -rf $Likk/.github/Tools/sqlite3_$ach $Likk/Module/common/sqlite3
 
 unzip -qo "$Likk/lib/YouTube.apk" "lib/$DEVICE/*" -d $Likk/Tav
 [ "$DEVICE" == 'x86' ] || mv -f $Likk/Tav/lib/$DEVICE $Likk/Tav/lib/$ach
