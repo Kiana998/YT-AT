@@ -72,6 +72,9 @@ Vidon="$(java -jar $Likk/lib/revanced-cli.jar -a $Likk/lib/revanced-integrations
 [ "$VERSION" == "Default" ] && VERSION="$Vidon"
 echo "VS=$Vidon" >> $GITHUB_ENV
 
+echo "
+$(java -jar $Likk/lib/revanced-cli.jar -a $Likk/lib/revanced-integrations.apk -b $Likk/lib/revanced-patches.jar -l --with-versions | grep -m1 general-ads)"
+
 Taiyt () {
 Upk="https://www.apkmirror.com"
 Url1="$(curl -s -k -L -G -H "$User" "$Upk/apk/google-inc/youtube/youtube-${VERSION//./-}-release/youtube-${VERSION//./-}$2-android-apk-download/" | grep -m1 'downloadButton' | tr ' ' '\n' | grep -m1 'href=' | cut -d \" -f2)"
